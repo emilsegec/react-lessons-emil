@@ -4,12 +4,14 @@ import {ListGroup} from 'react-bootstrap';
 
 import Item from './Item'
 import AddForm from './AddForm'
+import Pokus from "./Search";
+import Edit from "./Edit";
 
 
-const actions = {
+export const actions = {
     ITEM_CREATE:"ITEM_CREATE",
     ITEM_DELETE:"ITEM_DELETE",
-    ITEM_TOGGLE:"ITEM_TOGGLE"
+    ITEM_EDIT:"ITEM_EDIT"
 };
 
 /**
@@ -25,55 +27,48 @@ const actions = {
  * Pro propojení se storem musíme uložit do konstanty a poté exportovat se spuštěnou funkcí connect
  */
 const TodoList = class TodoList extends React.Component {
-    state = {comment: []};
+    state = {comment: [],showModal: false, currentEditedItem: null};
 
     handleCreate = (data) => {
-        //this.props.dispatch({type: actions.ITEM_CREATE, value: data.text})
-        this.setState({
-            comment: [
-                ...this.state.comment,
-                data
-            ]
-
-        });
+        this.props.dispatch({type: actions.ITEM_CREATE, payload:{ text: data.text, title: data.title} })
     };
 
     handleDelete = (index) => {
-        //this.props.dispatch({type: actions.ITEM_DELETE, index})
-        this.setState({
-           comment: [
-               ...this.state.comment.slice(0,index),
-               ...this.state.comment.slice(index+1),
-           ]
-        });
+        this.props.dispatch({type: actions.ITEM_DELETE, index})
+
     };
-   /* handleEdit = (index) => {
 
-        this.setState({
-            comment: [
-                ...this.state.comment
-            ]
-        });
-    };*/
+    handleEdit = (index) => {
+        this.open();
+        this.setState({currentEditedItem:index});
+    };
 
+    close = () => {
+        this.setState({showModal: false});
+    }
 
+    open = () => {
+        this.setState({showModal: true});
+    }
 
     render = () => {
-       // const {list} = this.props;
+        const {list} = this.props;
         return <div>
+            <Edit onClose={this.close} showModal={this.state.showModal} currentEditedItem={this.state.currentEditedItem}/>
+            <Pokus/>
             <ListGroup>
-                {this.state.comment.map((item,index) => <Item
+                {list.map((item,index) => <Item
                     key={index}
-                    //done={item.done}
                     title={item.title}
+                    //title={item.title}
                     text={item.text}
                     //onToggleState={this.handleToggleState.bind(this, index)}
                     onDelete={this.handleDelete.bind(this, index)}
-                    /*onEdit={this.handleEdit.bind(this, index)}*//>)}
+                    onEdit={this.handleEdit.bind(this, index)}/>)}
             </ListGroup>
             <AddForm onSubmit={this.handleCreate} />
         </div>
     };
 };
 
-export default connect((state) => ({list:state.todo.list}))(TodoList);
+export default connect((state) => ({list:state.todo.list,}))(TodoList);

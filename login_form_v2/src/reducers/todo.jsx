@@ -1,7 +1,7 @@
 const actions = {
     ITEM_CREATE:"ITEM_CREATE",
     ITEM_DELETE:"ITEM_DELETE",
-    ITEM_EDIT:"ITEM_EDIT"
+    ITEM_TOGGLE:"ITEM_TOGGLE"
 };
 
 /**
@@ -25,19 +25,20 @@ export default function todoStore(state = initialState, action = {}) {
                 list:[
                     ...state.list,
                     {
-                        text: action.payload.text,
-                        title: action.payload.title,
+                        login: action.value,
+                        //mail: action.value,
+                        done: false
                     }
                 ]
             };
-        case actions.ITEM_EDIT: {
+        case actions.ITEM_TOGGLE: {
             const {list} = state;
             return {
                 list:[
                     ...list.slice(0, action.index),
                     {
-                        title: action.data.title,
-                        text: action.data.text
+                        ...list[action.index],
+                        done: !list[action.index].done
                     },
                     ...list.slice(action.index+1)
                 ]
