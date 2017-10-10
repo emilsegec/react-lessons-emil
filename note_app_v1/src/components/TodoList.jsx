@@ -6,6 +6,7 @@ import Item from './Item'
 import AddForm from './AddForm'
 import Pokus from "./Search";
 import Edit from "./Edit";
+import {handleDelete, handleEdit} from "../actions/TODOActions";
 
 
 export const actions = {
@@ -33,11 +34,6 @@ const TodoList = class TodoList extends React.Component {
         this.props.dispatch({type: actions.ITEM_CREATE, payload:{ text: data.text, title: data.title} })
     };
 
-    handleDelete = (index) => {
-        this.props.dispatch({type: actions.ITEM_DELETE, index})
-
-    };
-
     handleEdit = (index) => {
         this.open();
         this.setState({currentEditedItem:index});
@@ -56,17 +52,15 @@ const TodoList = class TodoList extends React.Component {
         return <div>
             <Edit onClose={this.close} showModal={this.state.showModal} currentEditedItem={this.state.currentEditedItem}/>
             <Pokus/>
+            <AddForm onSubmit={this.handleCreate} />
             <ListGroup>
                 {list.map((item,index) => <Item
                     key={index}
                     title={item.title}
-                    //title={item.title}
                     text={item.text}
-                    //onToggleState={this.handleToggleState.bind(this, index)}
-                    onDelete={this.handleDelete.bind(this, index)}
+                    onDelete={() => this.props.dispatch(handleDelete(index))}
                     onEdit={this.handleEdit.bind(this, index)}/>)}
             </ListGroup>
-            <AddForm onSubmit={this.handleCreate} />
         </div>
     };
 };
